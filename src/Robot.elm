@@ -14,7 +14,7 @@ A robot that can face a direction and move forwards
 
 ## Making a robot
 
-@docs Robot, Position, make
+@docs Robot, make
 
 
 ## Moving
@@ -28,6 +28,8 @@ A robot that can face a direction and move forwards
 
 -}
 
+import Position exposing (Position)
+
 
 {-| The `Robot` type, robots have a position and are facing in a direction.
 
@@ -36,10 +38,6 @@ You can spawn a Robot somewhere with the `make` function.
 -}
 type Robot
     = Robot Position Direction
-
-
-type alias Position =
-    { x : Int, y : Int }
 
 
 type Direction
@@ -154,8 +152,4 @@ moveForward (Robot position direction) =
                 NW ->
                     { x = -1, y = -1 }
     in
-    Robot
-        { x = position.x + relativeMove.x
-        , y = position.y + relativeMove.y
-        }
-        direction
+    Robot (Position.add position relativeMove) direction
