@@ -45,7 +45,7 @@ You can spawn a Robot somewhere with the `make` function.
 
 -}
 type Robot
-    = Robot Position Direction
+    = Robot Position RotationDegrees Direction
 
 
 type Direction
@@ -59,6 +59,10 @@ type Direction
     | NW
 
 
+type alias RotationDegrees =
+    Int
+
+
 {-| You can spawn a Robot somewhere by passing a position. The robot will start
 facing south.
 
@@ -67,12 +71,12 @@ facing south.
 -}
 make : Position -> Robot
 make pos =
-    Robot pos S
+    Robot pos 0 S
 
 
 rotateClockwise : Robot -> Robot
-rotateClockwise (Robot pos direction) =
-    Robot pos <|
+rotateClockwise (Robot pos rotation direction) =
+    Robot pos (rotation + 45) <|
         case direction of
             N ->
                 NE
@@ -100,8 +104,8 @@ rotateClockwise (Robot pos direction) =
 
 
 rotateCounterclockwise : Robot -> Robot
-rotateCounterclockwise (Robot pos direction) =
-    Robot pos <|
+rotateCounterclockwise (Robot pos rotation direction) =
+    Robot pos (rotation - 45) <|
         case direction of
             N ->
                 NW
@@ -132,7 +136,7 @@ rotateCounterclockwise (Robot pos direction) =
 you will get an updated robot with the new position.
 -}
 moveForward : Robot -> Robot
-moveForward (Robot pos direction) =
+moveForward (Robot pos rotation direction) =
     let
         relativeMove =
             case direction of
@@ -160,19 +164,19 @@ moveForward (Robot pos direction) =
                 NW ->
                     { x = -1, y = -1 }
     in
-    Robot (Position.add pos relativeMove) direction
+    Robot (Position.add pos relativeMove) rotation direction
 
 
 {-| Get the position of the robot. Useful to check the position against other
 data structures like a Grid.
 -}
 position : Robot -> Position
-position (Robot pos direction) =
+position (Robot pos rotation direction) =
     pos
 
 
 view : Robot -> Html msg
-view (Robot pos direction) =
+view (Robot pos rotation direction) =
     div
         [ class "Robot"
         , style "transform" <|
@@ -181,35 +185,7 @@ view (Robot pos direction) =
                 ++ " * var(--cell-size)), calc("
                 ++ String.fromInt pos.y
                 ++ " * var(--cell-size))) rotate("
-                ++ String.fromInt (directionToRotation direction)
+                ++ String.fromInt rotation
                 ++ "deg)"
         ]
         [ text "🤖" ]
-
-
-directionToRotation : Direction -> Int
-directionToRotation direction =
-    case direction of
-        N ->
-            180
-
-        NE ->
-            225
-
-        E ->
-            270
-
-        SE ->
-            315
-
-        S ->
-            0
-
-        SW ->
-            45
-
-        W ->
-            90
-
-        NW ->
-            135
