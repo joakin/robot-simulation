@@ -1,6 +1,7 @@
 module Grid exposing
     ( Grid, make
     , isValidPosition
+    , view
     )
 
 {-| A grid data structure with width and height dimensions.
@@ -8,17 +9,24 @@ module Grid exposing
 Grid positions are valid from 0 to width - 1 or height - 1.
 
 
-# Creating a grid
+## Creating a grid
 
 @docs Grid, make
 
 
-# Checking positions in the grid
+## Checking positions in the grid
 
 @docs isValidPosition
 
+
+## Rendering a grid
+
+@docs view
+
 -}
 
+import Html exposing (Html, div)
+import Html.Attributes exposing (class, style)
 import Position exposing (Position)
 
 
@@ -37,3 +45,30 @@ isValidPosition position (Grid { width, height }) =
         && (position.x < width)
         && (position.y >= 0)
         && (position.y < height)
+
+
+view : Grid -> Html msg
+view (Grid { width, height }) =
+    div
+        [ class "Grid"
+        , style "width" ("calc(" ++ String.fromInt width ++ " * var(--cell-size))")
+        , style "height" ("calc(" ++ String.fromInt height ++ " * var(--cell-size))")
+        ]
+        (List.range 0 ((width * height) - 1) |> List.map (viewCell width))
+
+
+viewCell : Int -> Int -> Html msg
+viewCell width i =
+    let
+        row =
+            i // width
+
+        col =
+            i |> remainderBy width
+    in
+    div
+        [ class "Cell"
+        , style "top" ("calc(" ++ String.fromInt row ++ " * var(--cell-size))")
+        , style "left" ("calc(" ++ String.fromInt col ++ " * var(--cell-size))")
+        ]
+        []
