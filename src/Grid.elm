@@ -47,14 +47,17 @@ isValidPosition position (Grid { width, height }) =
         && (position.y < height)
 
 
-view : Grid -> Html msg
-view (Grid { width, height }) =
+view : Grid -> List (Html msg) -> Html msg
+view (Grid { width, height }) children =
     div
         [ class "Grid"
-        , style "width" ("calc(" ++ String.fromInt width ++ " * var(--cell-size))")
-        , style "height" ("calc(" ++ String.fromInt height ++ " * var(--cell-size))")
+        , style "min-width" ("calc(" ++ String.fromInt width ++ " * var(--cell-size))")
+        , style "min-height" ("calc(" ++ String.fromInt height ++ " * var(--cell-size))")
         ]
-        (List.range 0 ((width * height) - 1) |> List.map (viewCell width))
+        (List.range 0 ((width * height) - 1)
+            |> List.map (viewCell width)
+            |> (++) children
+        )
 
 
 viewCell : Int -> Int -> Html msg

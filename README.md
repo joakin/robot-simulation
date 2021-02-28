@@ -29,7 +29,7 @@ when you submit your application.
   - #666 (lighter links)
   - #959595 (light text over light background)
   - #999 (icons)
-  - #E9E9E9 (light background
+  - #E9E9E9 (light background)
   - #E15A1D (orange bg accent button)
   - #EA6E2F (orange background top bar)
   - #fff (text over orange backgrounds)
