@@ -177,15 +177,21 @@ position (Robot pos rotation direction) =
 
 view : Robot -> Html msg
 view (Robot pos rotation direction) =
+    let
+        x =
+            String.fromInt pos.x
+
+        y =
+            String.fromInt pos.y
+
+        translate =
+            "calc(" ++ x ++ " * var(--cell-size)), calc(" ++ y ++ " * var(--cell-size))"
+
+        rotate =
+            String.fromInt rotation ++ "deg"
+    in
     div
         [ class "Robot"
-        , style "transform" <|
-            "translate(calc("
-                ++ String.fromInt pos.x
-                ++ " * var(--cell-size)), calc("
-                ++ String.fromInt pos.y
-                ++ " * var(--cell-size))) rotate("
-                ++ String.fromInt rotation
-                ++ "deg)"
+        , style "transform" ("translate(" ++ translate ++ ") rotate(" ++ rotate ++ ")")
         ]
         [ text "🤖" ]
