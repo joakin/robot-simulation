@@ -1,7 +1,8 @@
 module Robot exposing
-    ( Robot, make
+    ( Robot, make, position
     , moveForward
     , rotateClockwise, rotateCounterclockwise
+    , view
     )
 
 {-|
@@ -14,7 +15,7 @@ A robot that can face a direction and move forwards
 
 ## Making a robot
 
-@docs Robot, make
+@docs Robot, make, position
 
 
 ## Moving
@@ -26,8 +27,15 @@ A robot that can face a direction and move forwards
 
 @docs rotateClockwise, rotateCounterclockwise
 
+
+## Rendering
+
+@docs view
+
 -}
 
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class, style)
 import Position exposing (Position)
 
 
@@ -58,13 +66,13 @@ facing south.
 
 -}
 make : Position -> Robot
-make position =
-    Robot position S
+make pos =
+    Robot pos S
 
 
 rotateClockwise : Robot -> Robot
-rotateClockwise (Robot position direction) =
-    Robot position <|
+rotateClockwise (Robot pos direction) =
+    Robot pos <|
         case direction of
             N ->
                 NE
@@ -92,8 +100,8 @@ rotateClockwise (Robot position direction) =
 
 
 rotateCounterclockwise : Robot -> Robot
-rotateCounterclockwise (Robot position direction) =
-    Robot position <|
+rotateCounterclockwise (Robot pos direction) =
+    Robot pos <|
         case direction of
             N ->
                 NW
@@ -124,7 +132,7 @@ rotateCounterclockwise (Robot position direction) =
 you will get an updated robot with the new position.
 -}
 moveForward : Robot -> Robot
-moveForward (Robot position direction) =
+moveForward (Robot pos direction) =
     let
         relativeMove =
             case direction of
@@ -152,4 +160,56 @@ moveForward (Robot position direction) =
                 NW ->
                     { x = -1, y = -1 }
     in
-    Robot (Position.add position relativeMove) direction
+    Robot (Position.add pos relativeMove) direction
+
+
+{-| Get the position of the robot. Useful to check the position against other
+data structures like a Grid.
+-}
+position : Robot -> Position
+position (Robot pos direction) =
+    pos
+
+
+view : Robot -> Html msg
+view (Robot pos direction) =
+    div
+        [ class "Robot"
+        , style "transform" <|
+            "translate(calc("
+                ++ String.fromInt pos.x
+                ++ " * var(--cell-size)), calc("
+                ++ String.fromInt pos.y
+                ++ " * var(--cell-size))) rotate("
+                ++ String.fromInt (directionToRotation direction)
+                ++ "deg)"
+        ]
+        [ text "🤖" ]
+
+
+directionToRotation : Direction -> Int
+directionToRotation direction =
+    case direction of
+        N ->
+            180
+
+        NE ->
+            225
+
+        E ->
+            270
+
+        SE ->
+            315
+
+        S ->
+            0
+
+        SW ->
+            45
+
+        W ->
+            90
+
+        NW ->
+            135

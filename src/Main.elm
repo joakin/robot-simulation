@@ -54,8 +54,11 @@ css =
     --cell-size: 50px;
 }
 
-.Grid {
+.Grid-container {
     position: relative;
+}
+
+.Grid {
     border: 1px solid lightgray;
 
 }
@@ -65,6 +68,19 @@ css =
     width: var(--cell-size);
     height: var(--cell-size);
     position: absolute;
+}
+
+.Robot {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: calc(var(--cell-size)*0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 100ms ease-in;
 }
 """
 
@@ -76,14 +92,40 @@ view model =
         [ Html.node "style" [] [ text css ]
         , h1 [] [ text "Robot simulation!" ]
         , p [] [ text "Instructions: Press the ⬅ and ➡ arrow keys to rotate the robot, and ⬆ to move forward." ]
-        , Grid.view grid
+        , div [ class "Grid-container" ]
+            [ Grid.view grid
+            , Robot.view model.robot
+            ]
         ]
     }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    ( model, Cmd.none )
+update msg ({ robot } as model) =
+    case msg of
+        GotInput input ->
+            ( { model
+                | robot =
+                    case input of
+                        RotateClockwise ->
+                            Robot.rotateClockwise robot
+
+                        RotateCounterclockwise ->
+                            Robot.rotateCounterclockwise robot
+
+                        MoveForward ->
+                            let
+                                newRobot =
+                                    Robot.moveForward robot
+                            in
+                            if Grid.isValidPosition (Robot.position newRobot) grid then
+                                newRobot
+
+                            else
+                                robot
+              }
+            , Cmd.none
+            )
 
 
 subscriptions : Model -> Sub Msg
@@ -100,10 +142,10 @@ toInput : String -> Decoder Input
 toInput string =
     case string of
         "ArrowLeft" ->
-            Decode.succeed RotateClockwise
+            Decode.succeed RotateCounterclockwise
 
         "ArrowRight" ->
-            Decode.succeed RotateCounterclockwise
+            Decode.succeed RotateClockwise
 
         "ArrowUp" ->
             Decode.succeed MoveForward
