@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "start": "elm make src/Main.elm --output=public/elm.js --optimize",
+    "dev": "elm make src/Main.elm --output=public/elm.js --debug",
+    "test": "elm-test",
+    "test-watch": "elm-test --watch"
+  },
   "devDependencies": {
     "elm": "^0.19.1-5",
     "elm-test": "^0.19.1-revision6"
